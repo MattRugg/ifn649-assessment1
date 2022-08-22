@@ -25,14 +25,11 @@ void dhtSetup()
 }
 
 void dhtRead(SensorData *sensorData)
-{
-  Serial.println("Reading DHT: humidity");
-  
+{ 
   // Reading temperature or humidity takes about 250 milliseconds!
   // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
   sensorData->airHumidityPercentage = dht.readHumidity();
 
-  Serial.println("Reading DHT: temperature");
   // Read temperature as Celsius (the default)
   sensorData->temperatureCelsius = dht.readTemperature();
 

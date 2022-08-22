@@ -1,5 +1,8 @@
 #include "Peripherals.hpp"
 
+// Instantiates a data object
+SensorData *data = new SensorData;
+
 // the setup() method runs once, when the sketch starts
 void setup() {
 
@@ -60,13 +63,19 @@ void loop()
 
 void sendSensorData() 
 {
-  // Instantiates a data object
-  SensorData *data = new SensorData;
-
+  // implements a unique ID for the message
+  // to detect potential duplication
+  static long int msgId = 0;
+  
   // Read from sensors and populate data object
   dhtRead(data);
   soilRead(data);
 
   // send data via bluetooth serial
+  Serial1.print(msgId);
+  Serial1.print(",");
   Serial1.println(data->toString());
+  Serial1.flush();
+
+  msgId++;
 }
