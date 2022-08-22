@@ -6,7 +6,8 @@
 
 // Pin mapping
 const int dhtPin = 21;     // Digital pin connected to the DHT sensor
-const int ledPin = 11;
+const int ledPin = 12;
+const int buzzerPin = 19;
 const int soilPin = 20;
 
 // Initialises the DHT sensor
@@ -25,12 +26,20 @@ void dhtSetup()
 
 void dhtRead(SensorData *sensorData)
 {
-
+  Serial.println("Reading DHT: humidity");
+  
   // Reading temperature or humidity takes about 250 milliseconds!
   // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
   sensorData->airHumidityPercentage = dht.readHumidity();
+
+  Serial.println("Reading DHT: temperature");
   // Read temperature as Celsius (the default)
   sensorData->temperatureCelsius = dht.readTemperature();
+
+  Serial.print("hum: ");
+  Serial.print(sensorData->airHumidityPercentage);
+  Serial.print(" tmp: ");
+  Serial.println(sensorData->temperatureCelsius);
 
   // Check if any reads failed and exit early (to try again).
   if (isnan(sensorData->airHumidityPercentage) || isnan(sensorData->temperatureCelsius))
@@ -56,9 +65,40 @@ void ledSetup()
   pinMode(ledPin, OUTPUT);
 }
 
-void ledToggle()
+void ledOn()
 {
-  static bool ledState = false;
-  digitalWrite(ledPin, ledState);
-  ledState = !ledState;
+  digitalWrite(ledPin, true);
+}
+
+void ledOff()
+{
+  digitalWrite(ledPin, false);
+}
+
+void buzzerSetup()
+{  
+  // initialize the digital pin as an output.
+  pinMode(buzzerPin, OUTPUT);
+}
+
+void buzzerPlayTrack(int iTrack)
+{
+  if (iTrack == 0)
+  {
+    tone(buzzerPin, 293, 300);
+    delay(400);
+    tone(buzzerPin, 293, 300);
+    delay(400);
+    noTone(buzzerPin);
+  }
+  else if (iTrack == 1)
+  {  
+    tone(buzzerPin, 880, 150);
+    delay(160);
+    tone(buzzerPin, 698, 150);
+    delay(160);
+    tone(buzzerPin, 784, 150);
+    delay(160);
+    noTone(buzzerPin);
+  }
 }
