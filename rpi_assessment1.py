@@ -27,7 +27,7 @@ def on_message(client, userdata, msg): # func for sending msg
 		ser.write(str.encode("BUZZER_TRACK" + payload))
 	elif msg.topic == "led":
 		ser.write(str.encode("LED_" + payload))
-	print("rcvd from MQTT: " + msg.topic + " " + payload)
+	print("### received from MQTT broker: " + msg.topic + " " + payload)
 
 client = mqtt.Client()
 client.on_connect = on_connect
@@ -40,9 +40,25 @@ while True:
 	if ser.in_waiting > 0:
 		rawserial = ser.readline()
 
-		print("rcvd from bt: ")
+		print("### received via bt: ")
 		cookedserial = rawserial.decode('utf-8').strip('\r\n')
-		print(cookedserial)
+
+		# it is good practice to avoid jamming the data
+		# bandwidth used in wireless communications of IoT
+		# devices. So I used comma separated values to
+		# encode sensed data collected from sensors. Now
+		# I'll split them back.
+		values = cookedserial.split(",")
+
+		# the message may come broken down and we need to
+		# avoid accessing an element out-of-bounds of the
+		# array.
+		valuesLen = len(values)
+		if (valuesLen > 0): print("msgID: " + values[0])
+		if (valuesLen > 1): print("airHumidity: " + values[1])
+		if (valuesLen > 2): print("airTemperature: " + values[2])
+		if (valuesLen > 3): print("airHeatIndexCelsius: " + values[3])
+		if (valuesLen > 4): print("soilHumidityPercentage: " + values[4])
 
 		# publish data comming from bl serial to MQTT server
 		# publish.single("ifn649", "Done", mqttAddress)
