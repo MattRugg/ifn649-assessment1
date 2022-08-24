@@ -9,7 +9,7 @@ import paho.mqtt.client as mqtt
 ttyBluetooth = "/dev/rfcomm0"
 
 # defines MQTT broker IP address
-mqttAddress = "13.56.231.2"
+mqttAddress = "54.193.132.176"
 
 # reading and writing data from and to teensy via serial
 # rfcomm0 corresponds to the bluetooth device
@@ -29,9 +29,16 @@ def on_message(client, userdata, msg): # func for sending msg
 		ser.write(str.encode("LED_" + payload))
 	print("### received from MQTT broker: " + msg.topic + " " + payload)
 
+def on_publish(client, obj, msg):
+	# We won't do anything at this point with this
+	# information.
+	#print("### published to MQTT: " + str(msg))
+	pass
+
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
+client.on_publish = on_publish
 client.connect(mqttAddress, 1883, 60)
 
 while True:
@@ -54,11 +61,27 @@ while True:
 		# avoid accessing an element out-of-bounds of the
 		# array.
 		valuesLen = len(values)
-		if (valuesLen > 0): print("msgID: " + values[0])
-		if (valuesLen > 1): print("airHumidity: " + values[1])
-		if (valuesLen > 2): print("airTemperature: " + values[2])
-		if (valuesLen > 3): print("airHeatIndexCelsius: " + values[3])
-		if (valuesLen > 4): print("soilHumidityPercentage: " + values[4])
 
-		# publish data comming from bl serial to MQTT server
-		# publish.single("ifn649", "Done", mqttAddress)
+		if (valuesLen > 0):
+			# we currently do not use the message id
+			print("msgID: " + values[0])
+
+		if (valuesLen > 1):
+			# publish air humidity to MQTT
+			print("airHumidity: " + values[1])
+			client.publish("airhum", values[1])
+
+		if (valuesLen > 2):
+			# publish air temperature to MQTT
+			print("airTemperature: " + values[2])
+			client.publish("airtemp", values[2])
+
+		if (valuesLen > 3):
+			#publish air heat index in Celsius to MQTT
+			print("airHeatIndexCelsius: " + values[3])
+			client.publish("heatindex", values[3])
+
+		if (valuesLen > 4):
+			#publish soil humidity percentage to MQTT
+			print("soilHumidityPercentage: " + values[4])
+			client.publish("soilhum", values[4])
