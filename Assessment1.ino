@@ -30,11 +30,11 @@ void loop()
 
   // process commands from bluetooth serial
   // TODO change it to Serial1 when happy with commands
-  if (Serial.available() > 0)
+  if (Serial1.available() > 0)
   {
-    String str = Serial.readString().trim();
-    Serial.print("received: ");
-    Serial.println(str);
+    String str = Serial1.readString().trim().toUpperCase();
+    Serial1.print("received: ");
+    Serial1.println(str);
 
     // Proccess command received
     if(str == "LED_ON") 
